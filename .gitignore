@@ -8,3 +8,6 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+/LoadDataNeo4j/nbproject/private/
+/LoadDataNeo4j/build/
+/LoadDataNeo4j/dist/
