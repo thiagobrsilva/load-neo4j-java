@@ -18,17 +18,23 @@ import utils.Utils;
 public class LoadDataNeo4j {
     
     public static void main(String[] args) {
+        
+        //filesPath is the path of txt files from GitHubCrawler project
         String filesPath = args[0];
         
         List<String> folderFiles = new ArrayList<String>();
+        
+        //folderFiles is a list of files
         folderFiles = Utils.getTxtFiles(filesPath);
         
         String line;
         
+        // Neo4j connection
         Utils.connectNeo4j();
         
         for (int i=0;i<folderFiles.size();i++)
         {
+            // Insert a node with the programming language name and creates a relationship with Github node
             Utils.insertLangs(folderFiles.get(i));
             int counter = 0;
             
@@ -38,7 +44,9 @@ public class LoadDataNeo4j {
                  while ((line = br.readLine()) != null) {
                     System.out.println(line);
                     
+                    // Ignoring header
                     if (counter>0) {
+                        // Inserting follower and followed
                         Utils.insertUsers(line);
                     }
                     
@@ -47,9 +55,10 @@ public class LoadDataNeo4j {
                 
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-            }
-            
+            }    
         }
+        
+        // Neo4j disconnection
         Utils.disconnectNeo4j();
         
     }

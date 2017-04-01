@@ -1,13 +1,9 @@
 package utils;
 
 import java.io.File;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.neo4j.driver.v1.*;
-
-
 import static org.neo4j.driver.v1.Values.parameters;
 
 /**
@@ -22,6 +18,8 @@ public class Utils {
     private static String progLang;
     private static String followed;
     
+    
+    //Function that returns a list of files with txt extension
     public static List<String> getTxtFiles(String path){
         
         File[] files = new File(path).listFiles();
@@ -49,6 +47,7 @@ public class Utils {
             return "";
     }
     
+    // Function to connect on Neo4j and create a node called Github
     public static void connectNeo4j() 
     {      
         try
@@ -66,8 +65,12 @@ public class Utils {
         }   
     }
     
+    // Create a new node with the language name with a relationship called "Belongs" to Github node
+    // quote variable is just to insert '
     public static void insertLangs(String lang)
     {
+        // Ex: java_usersList.txt 
+        // Using split function to get java
         File f = new File(lang);
         progLang = f.getName();
         String[] temp = progLang.split("_");
@@ -83,11 +86,10 @@ public class Utils {
         } catch(Exception e)
         {
             System.out.println(e.getMessage());
-        }
-        
-                
+        }            
     }
     
+    // Function that receives a line from the file and insert a node with the user name and creates a relationship with a language or another user
     public static void insertUsers(String line)
     {
         String[] temp = line.split(";");
@@ -105,7 +107,7 @@ public class Utils {
                                       "RETURN a.name",
         parameters( "name", followed ) );
         
-        //testando novo usuario
+        // Testing if is a new user name to create a relationship with language node
         if (!result.hasNext()) 
         {
            session.run( "MATCH (l:Language) WHERE l.name =" + quote + progLang + quote
@@ -113,17 +115,18 @@ public class Utils {
            parameters( "name", followed, "stars", followedStars, "repo", followedRepo ) ); 
         }
         
+        // Create a new node with the follower user name and a relationship with the followed
         session.run( "MATCH (f:Followed) WHERE f.name =" + quote + followed + quote
                    + " CREATE (a:Follower {name: {name}, stars: {stars}, repositories: {repo} }) -[:Follow]->(f)",
         parameters( "name", follower, "stars", followerStars, "repo", followerRepo ) );
            
     }
     
+    // Closing connection
     public static void disconnectNeo4j()
     {
         session.close();
         driver.close();
     }
-    
-    
+      
 }
